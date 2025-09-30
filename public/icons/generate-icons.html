@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Generate PWA Icons</title>
+</head>
+<body>
+  <h1>PWA Icon Generator</h1>
+  <p>Generating icons...</p>
+  <canvas id="canvas192" width="192" height="192" style="display:none;"></canvas>
+  <canvas id="canvas512" width="512" height="512" style="display:none;"></canvas>
+
+  <script>
+    // Generate 192x192 icon
+    const canvas192 = document.getElementById('canvas192');
+    const ctx192 = canvas192.getContext('2d');
+
+    // Background
+    ctx192.fillStyle = '#3b82f6';
+    ctx192.fillRect(0, 0, 192, 192);
+
+    // Icon design (fork and knife)
+    ctx192.fillStyle = '#ffffff';
+    ctx192.font = 'bold 120px Arial';
+    ctx192.textAlign = 'center';
+    ctx192.textBaseline = 'middle';
+    ctx192.fillText('🍽️', 96, 96);
+
+    // Download 192x192
+    canvas192.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'icon-192.png';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Generate 512x512 icon
+    const canvas512 = document.getElementById('canvas512');
+    const ctx512 = canvas512.getContext('2d');
+
+    // Background
+    ctx512.fillStyle = '#3b82f6';
+    ctx512.fillRect(0, 0, 512, 512);
+
+    // Icon design
+    ctx512.fillStyle = '#ffffff';
+    ctx512.font = 'bold 320px Arial';
+    ctx512.textAlign = 'center';
+    ctx512.textBaseline = 'middle';
+    ctx512.fillText('🍽️', 256, 256);
+
+    // Download 512x512
+    canvas512.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'icon-512.png';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.body.innerHTML += '<p>✅ Icons generated! Check your downloads folder.</p>';
+  </script>
+</body>
+</html>
