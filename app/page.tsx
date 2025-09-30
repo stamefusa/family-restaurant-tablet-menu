@@ -59,7 +59,8 @@ export default function HomePage() {
 
   // かごに追加
   const handleAddToCart = () => {
-    if (selectedMenu && 'price' in selectedMenu) {
+    if (selectedMenu) {
+      // MenuItemとOriginalMenuItemは同じ構造なので直接渡せる
       addToCart(selectedMenu as any);
 
       // トースト通知
@@ -98,11 +99,13 @@ export default function HomePage() {
 
       const data = await response.json();
 
-      // IndexedDBに保存
+      // IndexedDBに保存（価格999円、カテゴリ「オリジナル」固定）
       const newMenu: OriginalMenuItem = {
         id: `original_${Date.now()}`,
         name: originalMenuName,
+        price: 999, // オリジナルメニューは999円固定
         image: data.image, // base64画像
+        category: 'オリジナル',
         createdAt: Date.now(),
       };
 
@@ -305,20 +308,16 @@ export default function HomePage() {
 
               {/* メニュー情報 */}
               <div className="p-8">
-                {/* カテゴリバッジ（通常メニューのみ） */}
+                {/* カテゴリバッジ */}
                 {'category' in selectedMenu && (
                   <div className="mb-4">
-                    <span className="inline-block bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
+                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                      selectedMenu.category === 'オリジナル'
+                        ? 'bg-purple-200 text-purple-700'
+                        : 'bg-gray-200 text-gray-700'
+                    }`}>
+                      {selectedMenu.category === 'オリジナル' && '✨ '}
                       {selectedMenu.category}
-                    </span>
-                  </div>
-                )}
-
-                {/* オリジナルバッジ */}
-                {selectedStoreId === 'original' && (
-                  <div className="mb-4">
-                    <span className="inline-block bg-purple-200 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">
-                      ✨ オリジナルメニュー
                     </span>
                   </div>
                 )}
@@ -328,8 +327,8 @@ export default function HomePage() {
                   {selectedMenu.name}
                 </h1>
 
-                {/* 価格と注文ボタン（通常メニューのみ） */}
-                {'price' in selectedMenu ? (
+                {/* 価格と注文ボタン */}
+                {'price' in selectedMenu && (
                   <div className="flex items-center justify-between">
                     <div className="text-5xl font-bold text-red-600">
                       ¥{selectedMenu.price.toLocaleString()}
@@ -339,16 +338,6 @@ export default function HomePage() {
                       className="bg-blue-500 hover:bg-blue-600 text-white px-12 py-4 rounded-xl text-2xl font-bold transition-colors shadow-lg hover:shadow-xl"
                     >
                       注文に追加
-                    </button>
-                  </div>
-                ) : (
-                  // オリジナルメニューの場合は削除ボタン
-                  <div className="flex justify-end gap-4">
-                    <button
-                      onClick={() => handleDeleteOriginal(selectedMenu.id)}
-                      className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-lg font-medium transition-colors"
-                    >
-                      削除
                     </button>
                   </div>
                 )}

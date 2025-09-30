@@ -8,9 +8,9 @@ export class MenuDatabase extends Dexie {
   constructor() {
     super('MenuDatabase');
 
-    // スキーマ定義
-    this.version(1).stores({
-      originalMenus: 'id, name, image, createdAt',
+    // スキーマ定義（バージョン2に更新）
+    this.version(2).stores({
+      originalMenus: 'id, name, price, image, category, createdAt',
     });
   }
 }

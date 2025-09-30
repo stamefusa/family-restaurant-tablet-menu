@@ -27,6 +27,8 @@ export interface CartItem {
 export interface OriginalMenuItem {
   id: string;
   name: string;
+  price: number; // 価格（通常メニューと同様）
   image: string; // base64形式
+  category: string; // カテゴリ（「オリジナル」固定）
   createdAt: number;
 }
