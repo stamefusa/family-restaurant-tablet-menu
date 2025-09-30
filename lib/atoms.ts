@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
-import { CartItem, MenuItem } from './types';
+import { CartItem, MenuItem, OriginalMenuItem } from './types';
 
 // 選択中の店舗ID
 export const selectedStoreAtom = atom<string>('bami');
@@ -90,3 +90,6 @@ export const updateCartQuantityAtom = atom(
     }
   }
 );
+
+// オリジナルメニュー用のatom (クライアントサイドのみで使用)
+export const originalMenusAtom = atom<OriginalMenuItem[]>([]);
