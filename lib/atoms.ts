@@ -5,8 +5,8 @@ import { CartItem, MenuItem } from './types';
 // 選択中の店舗ID
 export const selectedStoreAtom = atom<string>('bami');
 
-// 選択中のカテゴリID
-export const selectedCategoryAtom = atom<string>('ramen');
+// 選択中のメニューID
+export const selectedMenuIdAtom = atom<string>('ramen_shoyu');
 
 // 注文かご (LocalStorage永続化)
 export const cartAtom = atomWithStorage<CartItem[]>('cart', []);

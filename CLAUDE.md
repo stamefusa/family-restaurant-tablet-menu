@@ -20,7 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Frontend (iPad Client)
 - **画面構成**:
-  - メニュー一覧画面: 上段=店舗タブ、下段=カテゴリタブ、メイン=メニュー一覧
+  - メニュー一覧画面: 上段=店舗タブ、下段=店舗配下の全メニュータブ、メイン=選択メニュー1件を大きく中央表示
   - 注文確認画面: かご一覧、削除・数量編集、注文確定
   - 右列固定ボタン: 注文かご(実動)、他はダミー
   - オリジナルタブ: 生成AI経由でメニュー追加
@@ -58,10 +58,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Data Model
 
 ```typescript
-// stores: { id, name, categories: [{ id, name, items: [{ id, name, price, image }] }] }
+// stores: { id, name, items: [{ id, name, price, image, category }] }
 // cart: { items: [{ itemId, name, unitPrice, qty, image }] }
 // original: { items: [{ id, name, image(base64), createdAt }] }
 ```
+
+**重要な変更**: データ構造を変更。カテゴリは各メニューアイテムの属性として保持（表示目的のみ）。下段タブには店舗配下の全メニューを直接表示し、メイン画面では選択された1つのメニューを大きく中央表示する。
 
 ## Development Notes
 

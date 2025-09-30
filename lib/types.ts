@@ -4,20 +4,14 @@ export interface MenuItem {
   name: string;
   price: number;
   image: string;
-}
-
-// カテゴリの型定義
-export interface Category {
-  id: string;
-  name: string;
-  items: MenuItem[];
+  category: string; // カテゴリ名（表示目的のみ）
 }
 
 // 店舗の型定義
 export interface Store {
   id: string;
   name: string;
-  categories: Category[];
+  items: MenuItem[]; // 全メニューをフラットに保持
 }
 
 // 注文かごアイテムの型定義
