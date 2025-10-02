@@ -61,7 +61,7 @@ export default function CartPage() {
           {/* 注文アイテム一覧 */}
           <div className="space-y-4 mb-8">
             {cart.map((item) => (
-              <div key={item.itemId} className="bg-white rounded-lg shadow-md p-4 flex gap-4">
+              <div key={item.itemId} className="bg-white rounded-lg shadow-md p-4 flex gap-4 items-center">
                 {/* 画像 */}
                 <div className="relative w-24 h-24 flex-shrink-0 bg-gray-200 rounded-lg overflow-hidden">
                   <Image
@@ -70,45 +70,40 @@ export default function CartPage() {
                     fill
                     className="object-cover"
                     sizes="96px"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = '/images/placeholder.jpg';
+                    }}
                   />
                 </div>
 
-                {/* 商品情報 */}
+                {/* 商品情報（左寄せ） */}
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold mb-2">{item.name}</h3>
-                  <p className="text-gray-600">¥{item.unitPrice.toLocaleString()}</p>
+                  <h3 className="text-lg font-semibold">{item.name}</h3>
                 </div>
 
-                {/* 数量調整 */}
-                <div className="flex flex-col items-center gap-2">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => updateQuantity({ itemId: item.itemId, qty: item.qty - 1 })}
-                      className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold transition-colors"
-                    >
-                      −
-                    </button>
-                    <span className="w-12 text-center font-semibold">{item.qty}</span>
-                    <button
-                      onClick={() => updateQuantity({ itemId: item.itemId, qty: item.qty + 1 })}
-                      className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold transition-colors"
-                    >
-                      +
-                    </button>
-                  </div>
-                  <button
-                    onClick={() => removeFromCart(item.itemId)}
-                    className="text-red-500 hover:text-red-600 text-sm font-medium"
-                  >
-                    削除
-                  </button>
-                </div>
-
-                {/* 小計 */}
-                <div className="text-right">
+                {/* 小計（中央配置） */}
+                <div className="text-center min-w-[100px]">
                   <p className="text-lg font-bold text-red-600">
                     ¥{(item.unitPrice * item.qty).toLocaleString()}
                   </p>
+                </div>
+
+                {/* 数量調整（中央配置） */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => updateQuantity({ itemId: item.itemId, qty: item.qty - 1 })}
+                    className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold transition-colors"
+                  >
+                    −
+                  </button>
+                  <span className="w-12 text-center font-semibold">{item.qty}</span>
+                  <button
+                    onClick={() => updateQuantity({ itemId: item.itemId, qty: item.qty + 1 })}
+                    className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold transition-colors"
+                  >
+                    +
+                  </button>
                 </div>
               </div>
             ))}
