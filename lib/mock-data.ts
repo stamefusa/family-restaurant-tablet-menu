@@ -1,7 +1,7 @@
 import { Store } from './types';
 
-// モックデータ: 店舗・メニュー
-export const mockStores: Store[] = [
+// 店舗・メニューデータ
+export const stores: Store[] = [
   {
     id: 'bami',
     name: 'バーミヤン',

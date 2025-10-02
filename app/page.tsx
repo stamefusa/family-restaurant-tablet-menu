@@ -1,18 +1,19 @@
 "use client";
 
 import { useAtom, useSetAtom } from 'jotai';
-import { selectedStoreAtom, selectedMenuIdAtom, addToCartAtom, originalMenusAtom } from '@/lib/atoms';
-import { mockStores } from '@/lib/mock-data';
-import { useMemo, useEffect, useState } from 'react';
+import { selectedStoreAtom, selectedCategoryAtom } from '@/lib/atoms';
+import { stores } from '@/lib/mock-data';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { db } from '@/lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { OriginalMenuItem } from '@/lib/types';
+import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
+  const router = useRouter();
   const [selectedStoreId, setSelectedStoreId] = useAtom(selectedStoreAtom);
-  const [selectedMenuId, setSelectedMenuId] = useAtom(selectedMenuIdAtom);
-  const addToCart = useSetAtom(addToCartAtom);
+  const [selectedCategory, setSelectedCategory] = useAtom(selectedCategoryAtom);
 
   // オリジナルメニュー名の入力
   const [originalMenuName, setOriginalMenuName] = useState('');
@@ -29,42 +30,59 @@ export default function HomePage() {
       // オリジナルタブの場合
       return null;
     }
-    return mockStores.find((store) => store.id === selectedStoreId);
+    return stores.find((store) => store.id === selectedStoreId);
   }, [selectedStoreId]);
 
-  // 選択中のメニューを取得
-  const selectedMenu = useMemo(() => {
+  // カテゴリ一覧を取得
+  const categories = useMemo(() => {
     if (selectedStoreId === 'original') {
-      // オリジナルメニューから検索
-      if (selectedMenuId === 'add-new') return null;
-      return originalMenus.find((item) => item.id === selectedMenuId);
+      // オリジナルの場合は「メニュー追加」と「オリジナル」カテゴリ
+      const cats = ['メニュー追加'];
+      if (originalMenus.length > 0) {
+        cats.push('オリジナル');
+      }
+      return cats;
     }
-    return selectedStore?.items.find((item) => item.id === selectedMenuId);
-  }, [selectedStore, selectedMenuId, originalMenus, selectedStoreId]);
 
-  // 店舗切り替え時にメニューをリセット
+    if (!selectedStore) return [];
+
+    // 通常店舗の場合はカテゴリを抽出
+    const uniqueCategories = Array.from(
+      new Set(selectedStore.items.map((item) => item.category))
+    );
+    return uniqueCategories;
+  }, [selectedStore, selectedStoreId, originalMenus]);
+
+  // 選択カテゴリのメニューアイテムを取得（最大4件）
+  const categoryMenus = useMemo(() => {
+    if (selectedStoreId === 'original') {
+      if (selectedCategory === 'オリジナル') {
+        return originalMenus.slice(0, 4);
+      }
+      return []; // メニュー追加の場合は空配列
+    }
+
+    if (!selectedStore) return [];
+
+    return selectedStore.items
+      .filter((item) => item.category === selectedCategory)
+      .slice(0, 4);
+  }, [selectedStore, selectedCategory, selectedStoreId, originalMenus]);
+
+  // 店舗切り替え時にカテゴリをリセット
   const handleStoreChange = (storeId: string) => {
     setSelectedStoreId(storeId);
 
     if (storeId === 'original') {
       // オリジナルタブの場合は「メニュー追加」を選択
-      setSelectedMenuId('add-new');
+      setSelectedCategory('メニュー追加');
     } else {
-      const newStore = mockStores.find((s) => s.id === storeId);
+      const newStore = stores.find((s) => s.id === storeId);
       if (newStore && newStore.items.length > 0) {
-        setSelectedMenuId(newStore.items[0].id);
+        // 最初のカテゴリを選択
+        const firstCategory = newStore.items[0].category;
+        setSelectedCategory(firstCategory);
       }
-    }
-  };
-
-  // かごに追加
-  const handleAddToCart = () => {
-    if (selectedMenu) {
-      // MenuItemとOriginalMenuItemは同じ構造なので直接渡せる
-      addToCart(selectedMenu as any);
-
-      // トースト通知
-      showToast(`「${selectedMenu.name}」をかごに追加しました`);
     }
   };
 
@@ -114,8 +132,8 @@ export default function HomePage() {
       // 入力をクリア
       setOriginalMenuName('');
 
-      // 作成したメニューを選択
-      setSelectedMenuId(newMenu.id);
+      // オリジナルカテゴリに切り替え
+      setSelectedCategory('オリジナル');
 
       showToast(`「${originalMenuName}」を作成しました`);
     } catch (error) {
@@ -123,20 +141,6 @@ export default function HomePage() {
       alert('メニュー生成に失敗しました');
     } finally {
       setIsGenerating(false);
-    }
-  };
-
-  // オリジナルメニューを削除
-  const handleDeleteOriginal = async (id: string) => {
-    if (confirm('このメニューを削除しますか？')) {
-      await db.originalMenus.delete(id);
-
-      // 削除したメニューが選択中なら「メニュー追加」に戻る
-      if (selectedMenuId === id) {
-        setSelectedMenuId('add-new');
-      }
-
-      showToast('メニューを削除しました');
     }
   };
 
@@ -158,7 +162,7 @@ export default function HomePage() {
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="container mx-auto overflow-x-auto">
           <div className="flex gap-2 p-2">
-            {mockStores.map((store) => (
+            {stores.map((store) => (
               <button
                 key={store.id}
                 onClick={() => handleStoreChange(store.id)}
@@ -186,69 +190,32 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 下段: メニュータブ or オリジナルメニュータブ */}
-      {selectedStoreId === 'original' ? (
-        // オリジナルタブの場合
-        <div className="bg-white border-b border-gray-200">
+      {/* 下段: カテゴリタブ */}
+      {categories.length > 0 && (
+        <div className="bg-red-600 border-b border-red-700">
           <div className="container mx-auto overflow-x-auto">
             <div className="flex gap-2 p-2">
-              {/* メニュー追加タブ */}
-              <button
-                onClick={() => setSelectedMenuId('add-new')}
-                className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
-                  selectedMenuId === 'add-new'
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                ➕ メニュー追加
-              </button>
-
-              {/* 作成済みオリジナルメニュータブ */}
-              {originalMenus.map((item) => (
+              {categories.map((category) => (
                 <button
-                  key={item.id}
-                  onClick={() => setSelectedMenuId(item.id)}
-                  className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
-                    selectedMenuId === item.id
-                      ? 'bg-orange-500 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-colors ${
+                    selectedCategory === category
+                      ? 'bg-white text-red-600'
+                      : 'bg-red-500 text-white hover:bg-red-400'
                   }`}
                 >
-                  {item.name}
+                  {category}
                 </button>
               ))}
             </div>
           </div>
         </div>
-      ) : (
-        // 通常の店舗の場合
-        selectedStore && (
-          <div className="bg-white border-b border-gray-200">
-            <div className="container mx-auto overflow-x-auto">
-              <div className="flex gap-2 p-2">
-                {selectedStore.items.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setSelectedMenuId(item.id)}
-                    className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
-                      selectedMenuId === item.id
-                        ? 'bg-orange-500 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {item.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )
       )}
 
       {/* メインコンテンツ */}
       <main className="container mx-auto p-8">
-        {selectedStoreId === 'original' && selectedMenuId === 'add-new' ? (
+        {selectedStoreId === 'original' && selectedCategory === 'メニュー追加' ? (
           // メニュー追加フォーム
           <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-2xl shadow-xl p-8">
@@ -286,67 +253,47 @@ export default function HomePage() {
               </button>
             </div>
           </div>
-        ) : selectedMenu ? (
-          // 選択されたメニューを大きく表示
-          <div className="max-w-3xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-              {/* メニュー画像 */}
-              <div className="relative w-full h-96 bg-gray-200">
-                <Image
-                  src={selectedMenu.image}
-                  alt={selectedMenu.name}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 768px"
-                  priority
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = '/images/placeholder.jpg';
-                  }}
-                />
-              </div>
+        ) : categoryMenus.length > 0 ? (
+          // メニューグリッド（2×2）
+          <div className="grid grid-cols-2 gap-6 max-w-5xl mx-auto">
+            {categoryMenus.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => router.push(`/menu/${item.id}`)}
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer text-left"
+              >
+                {/* メニュー画像 */}
+                <div className="relative w-full h-64 bg-gray-200">
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 50vw, 400px"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = '/images/placeholder.jpg';
+                    }}
+                  />
+                </div>
 
-              {/* メニュー情報 */}
-              <div className="p-8">
-                {/* カテゴリバッジ */}
-                {'category' in selectedMenu && (
-                  <div className="mb-4">
-                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                      selectedMenu.category === 'オリジナル'
-                        ? 'bg-purple-200 text-purple-700'
-                        : 'bg-gray-200 text-gray-700'
-                    }`}>
-                      {selectedMenu.category === 'オリジナル' && '✨ '}
-                      {selectedMenu.category}
-                    </span>
-                  </div>
-                )}
-
-                {/* メニュー名 */}
-                <h1 className="text-4xl font-bold text-gray-800 mb-6">
-                  {selectedMenu.name}
-                </h1>
-
-                {/* 価格と注文ボタン */}
-                {'price' in selectedMenu && (
-                  <div className="flex items-center justify-between">
-                    <div className="text-5xl font-bold text-red-600">
-                      ¥{selectedMenu.price.toLocaleString()}
+                {/* メニュー情報 */}
+                <div className="p-6">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                    {item.name}
+                  </h3>
+                  {'price' in item && (
+                    <div className="text-3xl font-bold text-red-600">
+                      ¥{item.price.toLocaleString()}
                     </div>
-                    <button
-                      onClick={handleAddToCart}
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-12 py-4 rounded-xl text-2xl font-bold transition-colors shadow-lg hover:shadow-xl"
-                    >
-                      注文に追加
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+                  )}
+                </div>
+              </button>
+            ))}
           </div>
         ) : (
           <p className="text-center text-gray-600 text-xl mt-8">
-            メニューを選択してください
+            このカテゴリにはメニューがありません
           </p>
         )}
       </main>
