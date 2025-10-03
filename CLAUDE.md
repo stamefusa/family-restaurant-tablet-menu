@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Frontend**: Next.js 15 + React 19 (SPA/PWA)
 - **Backend**: Next.js Route Handler (Edge Functions)
 - **Styling**: Tailwind CSS + shadcn/ui
-- **Storage**: IndexedDB (Dexie推奨) - 注文かご・オリジナルメニュー画像(最大8件)
+- **Storage**: IndexedDB (Dexie推奨) - 注文かご・オリジナルメニュー画像(最大30件)
 - **AI Integration**: OpenAI Images API (proxy経由)
 - **PWA**: Service Worker (App Shell cache)
 - **Deployment**: Vercel/Netlify
@@ -31,7 +31,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **データフロー**:
   1. メニュー追加 → IndexedDB保存 → バッジ更新
   2. 注文確定 → モーダル表示 → かごクリア
-  3. オリジナル追加 → `/api/generate` → base64画像をIndexedDB保存(最大8件、最古削除)
+  3. オリジナル追加 → `/api/generate` → base64画像をIndexedDB保存(最大30件、最古削除)
 
 - **PWA要件**:
   - `manifest.json`: `display: "standalone"`, `orientation: "landscape"`
@@ -54,7 +54,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Key Constraints
 
 - **横画面固定**: 縦画面時は「横画面にしてください」オーバーレイ表示
-- **オリジナルメニュー**: IndexedDBに最大8件、9件目で最古削除
+- **オリジナルメニュー**: IndexedDBに最大30件、31件目で最古削除
 - **対象デバイス**: iPad (10-13インチ)、Safari/Chrome最新版
 - **パフォーマンス**: 主要操作は100ms以内応答目標
 

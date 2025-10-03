@@ -2,7 +2,7 @@
 
 import { useAtom, useSetAtom } from 'jotai';
 import { selectedStoreAtom, selectedCategoryAtom, currentPageAtom } from '@/lib/atoms';
-import { stores } from '@/lib/mock-data';
+import { stores } from '@/lib/data';
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { db } from '@/lib/db';
@@ -154,8 +154,8 @@ export default function HomePage() {
     setIsGenerating(true);
 
     try {
-      // 9件目追加時は最古を削除
-      if (originalMenus.length >= 8) {
+      // 31件目追加時は最古を削除
+      if (originalMenus.length >= 30) {
         const oldest = originalMenus[originalMenus.length - 1];
         if (oldest) {
           await db.originalMenus.delete(oldest.id);
@@ -298,7 +298,7 @@ export default function HomePage() {
               <div className="bg-gray-100 p-4 rounded-lg mb-6">
                 <p className="text-sm text-gray-600">
                   💡 AIが料理の画像を自動生成します<br />
-                  最大8件まで保存できます（9件目で最古を削除）
+                  最大30件まで保存できます（31件目で最古を削除）
                 </p>
               </div>
 

@@ -20,9 +20,9 @@
 ### フロント技術
 - Next.js + React 19
 - Tailwind CSS + shadcn/ui（UI構築）
-- IndexedDB（Dexieライブラリ推奨）  
+- IndexedDB（Dexieライブラリ推奨）
   - 注文かご
-  - オリジナルメニュー（最大8件）
+  - オリジナルメニュー（最大30件）
 
 ### PWA要素
 - `manifest.json` → standaloneモード、横画面固定
@@ -69,8 +69,8 @@
  │ │ - 右列固定ボタン          │ │
  │ │ - オリジナル追加UI        │ │
  │ └───────────┬────────┘ │
- │              │ IndexedDB       │
- │              │ (かご,画像最大8)│
+ │              │ IndexedDB        │
+ │              │ (かご,画像最大30)│
  │ ┌───────────▼────────┐ │
  │ │ Service Worker            │ │
  │ │ - App Shell キャッシュ     │ │

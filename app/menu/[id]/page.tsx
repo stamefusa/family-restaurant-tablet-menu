@@ -3,7 +3,7 @@
 import { useRouter, useParams } from 'next/navigation';
 import { useAtom, useSetAtom } from 'jotai';
 import { selectedStoreAtom, addToCartAtom, originalMenusAtom } from '@/lib/atoms';
-import { stores } from '@/lib/mock-data';
+import { stores } from '@/lib/data';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { db } from '@/lib/db';
