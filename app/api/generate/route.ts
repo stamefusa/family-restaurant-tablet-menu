@@ -29,11 +29,49 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // プロンプト整形
+    // 1. GPT-4を使って価格を生成
+    const priceResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'あなたは日本のファミリーレストランの価格設定の専門家です。メニュー名から適切な価格を円単位で提案してください。一般的なファミレス価格（500円〜1500円程度）を参考にしてください。数字のみを返してください。'
+          },
+          {
+            role: 'user',
+            content: `以下のメニューの適切な価格を円単位で提案してください（数字のみ）：${menuName}`
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 10,
+      }),
+    });
+
+    if (!priceResponse.ok) {
+      console.error('OpenAI GPT API error');
+      return NextResponse.json(
+        { error: '価格生成に失敗しました' },
+        { status: 500 }
+      );
+    }
+
+    const priceData = await priceResponse.json();
+    const suggestedPrice = parseInt(priceData.choices[0].message.content.trim(), 10);
+
+    // 価格のバリデーション（数値型チェックのみ）
+    const price = isNaN(suggestedPrice) ? 999 : suggestedPrice;
+
+    // 2. プロンプト整形
     const prompt = `A high-quality, appetizing photo of ${menuName}, professional food photography, well-lit, restaurant quality, 背景は明るめのテーブルとしてください`;
 
-    // OpenAI Images APIを呼び出し（DALL-E 3使用）
-    const response = await fetch('https://api.openai.com/v1/images/generations', {
+    // 3. OpenAI Images APIを呼び出し（DALL-E 3使用）
+    const imageResponse = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -49,22 +87,25 @@ export async function POST(request: NextRequest) {
       }),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('OpenAI API error:', errorData);
+    if (!imageResponse.ok) {
+      const errorData = await imageResponse.json();
+      console.error('OpenAI Images API error:', errorData);
       return NextResponse.json(
         { error: '画像生成に失敗しました' },
         { status: 500 }
       );
     }
 
-    const data = await response.json();
-    const base64Image = data.data[0].b64_json;
+    const imageData = await imageResponse.json();
+    const base64Image = imageData.data[0].b64_json;
 
     // base64画像をdata URIに変換
     const imageDataUri = `data:image/png;base64,${base64Image}`;
 
-    return NextResponse.json({ image: imageDataUri });
+    return NextResponse.json({
+      image: imageDataUri,
+      price: price
+    });
 
   } catch (error) {
     console.error('API error:', error);

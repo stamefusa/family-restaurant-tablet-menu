@@ -26,12 +26,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - メニュー詳細画面: 選択メニューを大きく表示、「注文に追加」ボタン、戻るボタン
   - 注文確認画面: かご一覧、削除・数量編集、注文確定
   - 右列固定ボタン: 注文かご(実動)、他はダミー
-  - オリジナルタブ: 生成AI経由でメニュー追加（999円固定）
+  - オリジナルタブ: 生成AI経由でメニュー追加（価格もAI生成）
 
 - **データフロー**:
   1. メニュー追加 → IndexedDB保存 → バッジ更新
   2. 注文確定 → モーダル表示 → かごクリア
-  3. オリジナル追加 → `/api/generate` → base64画像をIndexedDB保存(最大30件、最古削除)
+  3. オリジナル追加 → `/api/generate` → AI生成価格+base64画像をIndexedDB保存(最大30件、最古削除)
 
 - **PWA要件**:
   - `manifest.json`: `display: "standalone"`, `orientation: "landscape"`
@@ -41,8 +41,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Backend API
 - **`/api/generate`**:
   - 入力: メニュー名
-  - 処理: バリデーション → プロンプト整形 → OpenAI Images API呼び出し
-  - 出力: base64画像
+  - 処理:
+    1. GPT-4o-miniで適切な価格を生成（500円〜1500円）
+    2. バリデーション → プロンプト整形 → OpenAI Images API呼び出し
+  - 出力: base64画像 + AI生成価格
   - セキュリティ: APIキーは環境変数(`OPENAI_API_KEY`)
 
 ### Authentication

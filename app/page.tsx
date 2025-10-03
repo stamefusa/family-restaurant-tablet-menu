@@ -175,11 +175,11 @@ export default function HomePage() {
 
       const data = await response.json();
 
-      // IndexedDBに保存（価格999円、カテゴリ「オリジナル」固定）
+      // IndexedDBに保存（価格はAI生成、カテゴリ「オリジナル」固定）
       const newMenu: OriginalMenuItem = {
         id: `original_${Date.now()}`,
         name: originalMenuName,
-        price: 999, // オリジナルメニューは999円固定
+        price: data.price, // AIが生成した価格
         image: data.image, // base64画像
         category: 'オリジナル',
         createdAt: Date.now(),
@@ -297,7 +297,7 @@ export default function HomePage() {
 
               <div className="bg-gray-100 p-4 rounded-lg mb-6">
                 <p className="text-sm text-gray-600">
-                  💡 AIが料理の画像を自動生成します<br />
+                  💡 AIが料理の画像と価格を自動生成します<br />
                   最大30件まで保存できます（31件目で最古を削除）
                 </p>
               </div>
