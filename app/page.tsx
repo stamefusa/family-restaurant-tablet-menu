@@ -215,9 +215,9 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* 上段: 店舗タブ + オリジナルタブ */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
+    <div className="h-screen overflow-hidden bg-gray-50 flex flex-col">
+      {/* 上段: 店舗タブ + オリジナルタブ（固定高さ） */}
+      <div className="bg-white border-b border-gray-200 shadow-sm flex-shrink-0">
         <div className="container mx-auto overflow-x-auto">
           <div className="flex gap-2 p-2">
             {stores.map((store) => (
@@ -248,9 +248,9 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 下段: カテゴリタブ */}
+      {/* 下段: カテゴリタブ（固定高さ） */}
       {categories.length > 0 && (
-        <div className="bg-red-600 border-b border-red-700">
+        <div className="bg-red-600 border-b border-red-700 flex-shrink-0">
           <div className="container mx-auto overflow-x-auto">
             <div className="flex gap-2 p-2">
               {categories.map((category) => (
@@ -271,8 +271,9 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* メインコンテンツ */}
-      <main className="container mx-auto px-4 py-6">
+      {/* メインコンテンツ（残りの高さを使用） */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="container mx-auto px-4 py-6 h-full">
         {selectedStoreId === 'original' && selectedCategory === 'メニュー追加' ? (
           // メニュー追加フォーム
           <div className="max-w-2xl mx-auto">
@@ -313,19 +314,18 @@ export default function HomePage() {
           </div>
         ) : categoryMenus.length > 0 ? (
           // メニューグリッド（2×2）+ ページネーション（16:9画像）
-          <div className="w-full max-w-[1000px] mx-auto">
-            <div className="flex items-start gap-3">
-              {/* 前のページボタン（2×2グリッド中央） */}
+          <div className="w-full max-w-[1000px] mx-auto h-full flex items-center">
+            <div className="flex items-center gap-3 w-full">
+              {/* 前のページボタン */}
               <button
                 onClick={handlePrevPage}
-                className="flex-shrink-0 w-12 h-12 mt-[220px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-2xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
+                className="flex-shrink-0 w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-2xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
               >
                 &lt;
               </button>
 
-              {/* メニューグリッドコンテナ（固定高さ） */}
-              <div className="flex-1 min-h-[470px]">
-                {/* メニューグリッド（16:9画像） */}
+              {/* メニューグリッド（16:9画像） */}
+              <div className="flex-1">
                 <div className="grid grid-cols-2 gap-3">
                   {categoryMenus.map((item) => (
                     <button
@@ -361,13 +361,13 @@ export default function HomePage() {
                       </div>
                     </button>
                   ))}
-                </div>
+              </div>
               </div>
 
-              {/* 次のページボタン（2×2グリッド中央） */}
+              {/* 次のページボタン */}
               <button
                 onClick={handleNextPage}
-                className="flex-shrink-0 w-12 h-12 mt-[220px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-2xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
+                className="flex-shrink-0 w-12 h-12 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-2xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
               >
                 &gt;
               </button>
@@ -378,6 +378,7 @@ export default function HomePage() {
             このカテゴリにはメニューがありません
           </p>
         )}
+        </div>
       </main>
     </div>
   );
