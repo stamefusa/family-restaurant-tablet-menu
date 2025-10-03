@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     // プロンプト整形
-    const prompt = `A high-quality, appetizing photo of ${menuName}, professional food photography, well-lit, restaurant quality`;
+    const prompt = `A high-quality, appetizing photo of ${menuName}, professional food photography, well-lit, restaurant quality, 背景は明るめのテーブルとしてください`;
 
     // OpenAI Images APIを呼び出し（DALL-E 3使用）
     const response = await fetch('https://api.openai.com/v1/images/generations', {
