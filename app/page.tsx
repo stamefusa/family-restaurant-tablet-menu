@@ -312,59 +312,62 @@ export default function HomePage() {
             </div>
           </div>
         ) : categoryMenus.length > 0 ? (
-          // メニューグリッド（2×2）+ ページネーション（iPad最適化）
-          <div className="w-full max-w-[1200px] mx-auto">
+          // メニューグリッド（2×2）+ ページネーション（横長画像 3:2）
+          <div className="w-full max-w-[1000px] mx-auto">
             <div className="flex items-start gap-3">
-              {/* 前のページボタン */}
+              {/* 前のページボタン（2×2グリッド中央） */}
               <button
                 onClick={handlePrevPage}
-                className="flex-shrink-0 w-14 h-14 mt-[220px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-3xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
+                className="flex-shrink-0 w-12 h-12 mt-[325px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-2xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
               >
                 &lt;
               </button>
 
-              {/* メニューグリッド（iPad最適化） */}
-              <div className="flex-1 grid grid-cols-2 gap-4 h-[500px]">
-                {categoryMenus.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => router.push(`/menu/${item.id}`)}
-                    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer text-left h-[248px]"
-                  >
-                    {/* メニュー画像 */}
-                    <div className="relative w-full h-40 bg-gray-200">
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 1024px) 45vw, 500px"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = '/images/placeholder.jpg';
-                        }}
-                      />
-                    </div>
+              {/* メニューグリッドコンテナ（固定高さ） */}
+              <div className="flex-1 min-h-[680px]">
+                {/* メニューグリッド（横長画像 3:2） */}
+                <div className="grid grid-cols-2 gap-3">
+                  {categoryMenus.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => router.push(`/menu/${item.id}`)}
+                      className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer text-left"
+                    >
+                      {/* メニュー画像（横長 3:2） */}
+                      <div className="relative w-full aspect-[3/2] bg-gray-200">
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 1024px) 40vw, 450px"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/images/placeholder.jpg';
+                          }}
+                        />
+                      </div>
 
-                    {/* メニュー情報 */}
-                    <div className="p-4">
-                      <h3 className="text-xl font-bold text-gray-800 mb-1 line-clamp-1">
-                        {item.name}
-                      </h3>
-                      {'price' in item && (
-                        <div className="text-2xl font-bold text-red-600">
-                          ¥{item.price.toLocaleString()}
-                        </div>
-                      )}
-                    </div>
-                  </button>
-                ))}
+                      {/* メニュー情報 */}
+                      <div className="p-3">
+                        <h3 className="text-base font-bold text-gray-800 mb-1 line-clamp-2 leading-tight">
+                          {item.name}
+                        </h3>
+                        {'price' in item && (
+                          <div className="text-lg font-bold text-red-600">
+                            ¥{item.price.toLocaleString()}
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              {/* 次のページボタン */}
+              {/* 次のページボタン（2×2グリッド中央） */}
               <button
                 onClick={handleNextPage}
-                className="flex-shrink-0 w-14 h-14 mt-[220px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-3xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
+                className="flex-shrink-0 w-12 h-12 mt-[325px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-2xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
               >
                 &gt;
               </button>
