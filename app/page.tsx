@@ -314,22 +314,22 @@ export default function HomePage() {
         ) : categoryMenus.length > 0 ? (
           // メニューグリッド（2×2）+ ページネーション
           <div className="max-w-6xl mx-auto">
-            <div className="flex items-center gap-4">
+            <div className="flex items-start gap-4">
               {/* 前のページボタン */}
               <button
                 onClick={handlePrevPage}
-                className="flex-shrink-0 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors shadow-md hover:shadow-lg"
+                className="flex-shrink-0 w-12 h-12 mt-[280px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-2xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
               >
-                &lt; 前のページ
+                &lt;
               </button>
 
-              {/* メニューグリッド */}
-              <div className="flex-1 grid grid-cols-2 gap-6">
+              {/* メニューグリッド（固定高さ） */}
+              <div className="flex-1 grid grid-cols-2 gap-6 h-[648px]">
                 {categoryMenus.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => router.push(`/menu/${item.id}`)}
-                    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer text-left"
+                    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer text-left h-[316px]"
                   >
                     {/* メニュー画像 */}
                     <div className="relative w-full h-64 bg-gray-200">
@@ -364,9 +364,9 @@ export default function HomePage() {
               {/* 次のページボタン */}
               <button
                 onClick={handleNextPage}
-                className="flex-shrink-0 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors shadow-md hover:shadow-lg"
+                className="flex-shrink-0 w-12 h-12 mt-[280px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-2xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
               >
-                次のページ &gt;
+                &gt;
               </button>
             </div>
           </div>
