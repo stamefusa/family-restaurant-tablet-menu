@@ -272,7 +272,7 @@ export default function HomePage() {
       )}
 
       {/* メインコンテンツ */}
-      <main className="container mx-auto p-8">
+      <main className="container mx-auto px-4 py-6">
         {selectedStoreId === 'original' && selectedCategory === 'メニュー追加' ? (
           // メニュー追加フォーム
           <div className="max-w-2xl mx-auto">
@@ -312,33 +312,33 @@ export default function HomePage() {
             </div>
           </div>
         ) : categoryMenus.length > 0 ? (
-          // メニューグリッド（2×2）+ ページネーション
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-start gap-4">
+          // メニューグリッド（2×2）+ ページネーション（iPad最適化）
+          <div className="w-full max-w-[1200px] mx-auto">
+            <div className="flex items-start gap-3">
               {/* 前のページボタン */}
               <button
                 onClick={handlePrevPage}
-                className="flex-shrink-0 w-12 h-12 mt-[280px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-2xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
+                className="flex-shrink-0 w-14 h-14 mt-[220px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-3xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
               >
                 &lt;
               </button>
 
-              {/* メニューグリッド（固定高さ） */}
-              <div className="flex-1 grid grid-cols-2 gap-6 h-[648px]">
+              {/* メニューグリッド（iPad最適化） */}
+              <div className="flex-1 grid grid-cols-2 gap-4 h-[500px]">
                 {categoryMenus.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => router.push(`/menu/${item.id}`)}
-                    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer text-left h-[316px]"
+                    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer text-left h-[248px]"
                   >
                     {/* メニュー画像 */}
-                    <div className="relative w-full h-64 bg-gray-200">
+                    <div className="relative w-full h-40 bg-gray-200">
                       <Image
                         src={item.image}
                         alt={item.name}
                         fill
                         className="object-cover"
-                        sizes="(max-width: 1024px) 50vw, 400px"
+                        sizes="(max-width: 1024px) 45vw, 500px"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.src = '/images/placeholder.jpg';
@@ -347,12 +347,12 @@ export default function HomePage() {
                     </div>
 
                     {/* メニュー情報 */}
-                    <div className="p-6">
-                      <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                    <div className="p-4">
+                      <h3 className="text-xl font-bold text-gray-800 mb-1 line-clamp-1">
                         {item.name}
                       </h3>
                       {'price' in item && (
-                        <div className="text-3xl font-bold text-red-600">
+                        <div className="text-2xl font-bold text-red-600">
                           ¥{item.price.toLocaleString()}
                         </div>
                       )}
@@ -364,7 +364,7 @@ export default function HomePage() {
               {/* 次のページボタン */}
               <button
                 onClick={handleNextPage}
-                className="flex-shrink-0 w-12 h-12 mt-[280px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-2xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
+                className="flex-shrink-0 w-14 h-14 mt-[220px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-3xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
               >
                 &gt;
               </button>
