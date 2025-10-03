@@ -1,7 +1,7 @@
 "use client";
 
 import { useAtom, useSetAtom } from 'jotai';
-import { selectedStoreAtom, selectedCategoryAtom } from '@/lib/atoms';
+import { selectedStoreAtom, selectedCategoryAtom, currentPageAtom } from '@/lib/atoms';
 import { stores } from '@/lib/mock-data';
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
@@ -14,6 +14,7 @@ export default function HomePage() {
   const router = useRouter();
   const [selectedStoreId, setSelectedStoreId] = useAtom(selectedStoreAtom);
   const [selectedCategory, setSelectedCategory] = useAtom(selectedCategoryAtom);
+  const [currentPage, setCurrentPage] = useAtom(currentPageAtom);
 
   // オリジナルメニュー名の入力
   const [originalMenuName, setOriginalMenuName] = useState('');
@@ -53,25 +54,33 @@ export default function HomePage() {
     return uniqueCategories;
   }, [selectedStore, selectedStoreId, originalMenus]);
 
-  // 選択カテゴリのメニューアイテムを取得（最大4件）
-  const categoryMenus = useMemo(() => {
+  // 選択カテゴリの全アイテムを取得
+  const allCategoryItems = useMemo(() => {
     if (selectedStoreId === 'original') {
       if (selectedCategory === 'オリジナル') {
-        return originalMenus.slice(0, 4);
+        return originalMenus;
       }
       return []; // メニュー追加の場合は空配列
     }
 
     if (!selectedStore) return [];
 
-    return selectedStore.items
-      .filter((item) => item.category === selectedCategory)
-      .slice(0, 4);
+    return selectedStore.items.filter((item) => item.category === selectedCategory);
   }, [selectedStore, selectedCategory, selectedStoreId, originalMenus]);
 
-  // 店舗切り替え時にカテゴリをリセット
+  // 総ページ数を計算
+  const totalPages = Math.ceil(allCategoryItems.length / 4);
+
+  // 現在のページに表示するメニューアイテム（4件）
+  const categoryMenus = useMemo(() => {
+    const startIndex = currentPage * 4;
+    return allCategoryItems.slice(startIndex, startIndex + 4);
+  }, [allCategoryItems, currentPage]);
+
+  // 店舗切り替え時にカテゴリとページをリセット
   const handleStoreChange = (storeId: string) => {
     setSelectedStoreId(storeId);
+    setCurrentPage(0); // ページを最初に戻す
 
     if (storeId === 'original') {
       // オリジナルタブの場合は「メニュー追加」を選択
@@ -83,6 +92,55 @@ export default function HomePage() {
         const firstCategory = newStore.items[0].category;
         setSelectedCategory(firstCategory);
       }
+    }
+  };
+
+  // カテゴリ切り替え時にページをリセット
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setCurrentPage(0); // ページを最初に戻す
+  };
+
+  // 次のページに進む
+  const handleNextPage = () => {
+    if (currentPage < totalPages - 1) {
+      // カテゴリ内の次ページへ
+      setCurrentPage(currentPage + 1);
+    } else {
+      // カテゴリの最終ページなら次のカテゴリへ
+      const currentCategoryIndex = categories.indexOf(selectedCategory);
+      const nextCategoryIndex = (currentCategoryIndex + 1) % categories.length;
+      setSelectedCategory(categories[nextCategoryIndex]);
+      setCurrentPage(0);
+    }
+  };
+
+  // 前のページに戻る
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      // カテゴリ内の前ページへ
+      setCurrentPage(currentPage - 1);
+    } else {
+      // カテゴリの最初のページなら前のカテゴリの最終ページへ
+      const currentCategoryIndex = categories.indexOf(selectedCategory);
+      const prevCategoryIndex = (currentCategoryIndex - 1 + categories.length) % categories.length;
+
+      // 前のカテゴリを選択
+      const prevCategory = categories[prevCategoryIndex];
+      setSelectedCategory(prevCategory);
+
+      // 前のカテゴリのアイテム数を取得して最終ページを計算
+      let prevCategoryItems;
+      if (selectedStoreId === 'original' && prevCategory === 'オリジナル') {
+        prevCategoryItems = originalMenus;
+      } else if (selectedStore) {
+        prevCategoryItems = selectedStore.items.filter((item) => item.category === prevCategory);
+      } else {
+        prevCategoryItems = [];
+      }
+
+      const prevTotalPages = Math.ceil(prevCategoryItems.length / 4);
+      setCurrentPage(Math.max(0, prevTotalPages - 1));
     }
   };
 
@@ -198,7 +256,7 @@ export default function HomePage() {
               {categories.map((category) => (
                 <button
                   key={category}
-                  onClick={() => setSelectedCategory(category)}
+                  onClick={() => handleCategoryChange(category)}
                   className={`px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-colors ${
                     selectedCategory === category
                       ? 'bg-white text-red-600'
@@ -254,42 +312,63 @@ export default function HomePage() {
             </div>
           </div>
         ) : categoryMenus.length > 0 ? (
-          // メニューグリッド（2×2）
-          <div className="grid grid-cols-2 gap-6 max-w-5xl mx-auto">
-            {categoryMenus.map((item) => (
+          // メニューグリッド（2×2）+ ページネーション
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-4">
+              {/* 前のページボタン */}
               <button
-                key={item.id}
-                onClick={() => router.push(`/menu/${item.id}`)}
-                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer text-left"
+                onClick={handlePrevPage}
+                className="flex-shrink-0 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors shadow-md hover:shadow-lg"
               >
-                {/* メニュー画像 */}
-                <div className="relative w-full h-64 bg-gray-200">
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 50vw, 400px"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/images/placeholder.jpg';
-                    }}
-                  />
-                </div>
-
-                {/* メニュー情報 */}
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                    {item.name}
-                  </h3>
-                  {'price' in item && (
-                    <div className="text-3xl font-bold text-red-600">
-                      ¥{item.price.toLocaleString()}
-                    </div>
-                  )}
-                </div>
+                &lt; 前のページ
               </button>
-            ))}
+
+              {/* メニューグリッド */}
+              <div className="flex-1 grid grid-cols-2 gap-6">
+                {categoryMenus.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => router.push(`/menu/${item.id}`)}
+                    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow cursor-pointer text-left"
+                  >
+                    {/* メニュー画像 */}
+                    <div className="relative w-full h-64 bg-gray-200">
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 1024px) 50vw, 400px"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/images/placeholder.jpg';
+                        }}
+                      />
+                    </div>
+
+                    {/* メニュー情報 */}
+                    <div className="p-6">
+                      <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                        {item.name}
+                      </h3>
+                      {'price' in item && (
+                        <div className="text-3xl font-bold text-red-600">
+                          ¥{item.price.toLocaleString()}
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* 次のページボタン */}
+              <button
+                onClick={handleNextPage}
+                className="flex-shrink-0 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors shadow-md hover:shadow-lg"
+              >
+                次のページ &gt;
+              </button>
+            </div>
           </div>
         ) : (
           <p className="text-center text-gray-600 text-xl mt-8">

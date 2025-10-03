@@ -8,6 +8,9 @@ export const selectedStoreAtom = atom<string>('bami');
 // 選択中のカテゴリ
 export const selectedCategoryAtom = atom<string>('ラーメン');
 
+// 現在のページ番号（カテゴリごとに0から開始）
+export const currentPageAtom = atom<number>(0);
+
 // 注文かご (LocalStorage永続化)
 export const cartAtom = atomWithStorage<CartItem[]>('cart', []);
 
