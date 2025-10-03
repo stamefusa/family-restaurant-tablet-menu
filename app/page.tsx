@@ -312,20 +312,20 @@ export default function HomePage() {
             </div>
           </div>
         ) : categoryMenus.length > 0 ? (
-          // メニューグリッド（2×2）+ ページネーション（横長画像 3:2）
+          // メニューグリッド（2×2）+ ページネーション（16:9画像）
           <div className="w-full max-w-[1000px] mx-auto">
             <div className="flex items-start gap-3">
               {/* 前のページボタン（2×2グリッド中央） */}
               <button
                 onClick={handlePrevPage}
-                className="flex-shrink-0 w-12 h-12 mt-[325px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-2xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
+                className="flex-shrink-0 w-12 h-12 mt-[220px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-2xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
               >
                 &lt;
               </button>
 
               {/* メニューグリッドコンテナ（固定高さ） */}
-              <div className="flex-1 min-h-[680px]">
-                {/* メニューグリッド（横長画像 3:2） */}
+              <div className="flex-1 min-h-[470px]">
+                {/* メニューグリッド（16:9画像） */}
                 <div className="grid grid-cols-2 gap-3">
                   {categoryMenus.map((item) => (
                     <button
@@ -333,8 +333,8 @@ export default function HomePage() {
                       onClick={() => router.push(`/menu/${item.id}`)}
                       className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer text-left"
                     >
-                      {/* メニュー画像（横長 3:2） */}
-                      <div className="relative w-full aspect-[3/2] bg-gray-200">
+                      {/* メニュー画像（16:9） */}
+                      <div className="relative w-full aspect-video bg-gray-200">
                         <Image
                           src={item.image}
                           alt={item.name}
@@ -367,7 +367,7 @@ export default function HomePage() {
               {/* 次のページボタン（2×2グリッド中央） */}
               <button
                 onClick={handleNextPage}
-                className="flex-shrink-0 w-12 h-12 mt-[325px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-2xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
+                className="flex-shrink-0 w-12 h-12 mt-[220px] bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-2xl font-bold transition-colors shadow-md hover:shadow-lg flex items-center justify-center"
               >
                 &gt;
               </button>
