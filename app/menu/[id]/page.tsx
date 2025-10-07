@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter, useParams } from 'next/navigation';
-import { useAtom, useSetAtom } from 'jotai';
-import { selectedStoreAtom, addToCartAtom } from '@/lib/atoms';
+import { useSetAtom } from 'jotai';
+import { addToCartAtom } from '@/lib/atoms';
 import { stores } from '@/lib/data';
 import { useState } from 'react';
 import Image from 'next/image';
@@ -13,13 +13,19 @@ export default function MenuDetailPage() {
   const params = useParams();
   const menuId = params.id as string;
 
-  const [selectedStore] = useAtom(selectedStoreAtom);
   const addToCart = useSetAtom(addToCartAtom);
   const [showToast, setShowToast] = useState(false);
 
-  // Find menu item
-  const store = stores.find((s) => s.id === selectedStore);
-  const menuItem: MenuItem | undefined = store?.items.find((item) => item.id === menuId);
+  // Find menu item across all stores (not dependent on selectedStore state)
+  let menuItem: MenuItem | undefined;
+
+  for (const store of stores) {
+    const item = store.items.find((item) => item.id === menuId);
+    if (item) {
+      menuItem = item;
+      break;
+    }
+  }
 
   const handleAddToCart = () => {
     if (menuItem && 'price' in menuItem) {
