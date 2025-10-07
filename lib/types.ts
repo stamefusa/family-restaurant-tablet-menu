@@ -22,13 +22,3 @@ export interface CartItem {
   qty: number;
   image: string;
 }
-
-// オリジナルメニューの型定義
-export interface OriginalMenuItem {
-  id: string;
-  name: string;
-  price: number; // 価格（通常メニューと同様）
-  image: string; // base64形式
-  category: string; // カテゴリ（「オリジナル」固定）
-  createdAt: number;
-}

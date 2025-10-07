@@ -2,12 +2,11 @@
 
 import { useRouter, useParams } from 'next/navigation';
 import { useAtom, useSetAtom } from 'jotai';
-import { selectedStoreAtom, addToCartAtom, originalMenusAtom } from '@/lib/atoms';
+import { selectedStoreAtom, addToCartAtom } from '@/lib/atoms';
 import { stores } from '@/lib/data';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
-import { db } from '@/lib/db';
-import { MenuItem, OriginalMenuItem } from '@/lib/types';
+import { MenuItem } from '@/lib/types';
 
 export default function MenuDetailPage() {
   const router = useRouter();
@@ -16,31 +15,11 @@ export default function MenuDetailPage() {
 
   const [selectedStore] = useAtom(selectedStoreAtom);
   const addToCart = useSetAtom(addToCartAtom);
-  const [originalMenus, setOriginalMenus] = useAtom(originalMenusAtom);
   const [showToast, setShowToast] = useState(false);
 
   // Find menu item
   const store = stores.find((s) => s.id === selectedStore);
-  let menuItem: MenuItem | OriginalMenuItem | undefined;
-
-  // Check if it's a regular menu item
-  if (store) {
-    menuItem = store.items.find((item) => item.id === menuId);
-  }
-
-  // If not found, check original menus
-  if (!menuItem) {
-    menuItem = originalMenus.find((item) => item.id === menuId);
-  }
-
-  // Load original menus from IndexedDB on mount
-  useEffect(() => {
-    const loadOriginalMenus = async () => {
-      const menus = await db.originalMenus.orderBy('createdAt').reverse().toArray();
-      setOriginalMenus(menus);
-    };
-    loadOriginalMenus();
-  }, [setOriginalMenus]);
+  const menuItem: MenuItem | undefined = store?.items.find((item) => item.id === menuId);
 
   const handleAddToCart = () => {
     if (menuItem && 'price' in menuItem) {

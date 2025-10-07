@@ -9,8 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "dexie": "^4.0.11",
-    "dexie-react-hooks": "^1.1.7",
     "jotai": "^2.10.3",
     "next": "^15.1.0",
     "react": "^19.0.0",
