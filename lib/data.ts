@@ -42,4 +42,21 @@ export const stores: Store[] = [
       { id: 'pizza-egg', name: '半熟卵のミラノ風ドリア', price: 350, image: '/images/sai/pizza-egg.jpg', category: 'ピザ・ドリア' },
     ],
   },
+  {
+    id: 'coco',
+    name: 'ココス',
+    items: [
+      // グリル・ライス
+      { id: 'grill-tsutsumi', name: '濃厚ビーフシチューの包み焼きハンバーグ145g', price: 1199, image: '/images/coco/grill-tsutsumi.jpg', category: 'グリル・ライス' },
+      { id: 'grill-double', name: 'ココスのハンバーグダブル', price: 1199, image: '/images/coco/grill-double.jpg', category: 'グリル・ライス' },
+      { id: 'grill-steak', name: '厚切り!!サーロインステーキ', price: 2409, image: '/images/coco/grill-steak.jpg', category: 'グリル・ライス' },
+      { id: 'grill-omu', name: '濃厚ビーフシチューのふわとろオムライス', price: 1309, image: '/images/coco/grill-omu.jpg', category: 'グリル・ライス' },
+
+      // サイド・サラダ
+      { id: 'side-potato', name: 'カリカリポテト', price: 495, image: '/images/coco/side-potato.jpg', category: 'サイド・サラダ' },
+      { id: 'side-salad', name: '温野菜のシーザーサラダ', price: 429, image: '/images/coco/side-salad.jpg', category: 'サイド・サラダ' },
+      { id: 'side-mexico', name: 'メキシカン・ケサディーヤ', price: 759, image: '/images/coco/side-mexico.jpg', category: 'サイド・サラダ' },
+      { id: 'side-corn', name: 'コーンスープ', price: 319, image: '/images/coco/side-corn.jpg', category: 'サイド・サラダ' },
+    ],
+  },
 ];
