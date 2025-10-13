@@ -6,7 +6,7 @@ import { CartItem, MenuItem } from './types';
 export const selectedStoreAtom = atom<string>('bami');
 
 // 選択中のカテゴリ
-export const selectedCategoryAtom = atom<string>('ラーメン');
+export const selectedCategoryAtom = atom<string>('主菜・飯');
 
 // 現在のページ番号（カテゴリごとに0から開始）
 export const currentPageAtom = atom<number>(0);
