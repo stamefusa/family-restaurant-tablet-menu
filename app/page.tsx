@@ -3,7 +3,7 @@
 import { useAtom } from 'jotai';
 import { selectedStoreAtom, selectedCategoryAtom, currentPageAtom } from '@/lib/atoms';
 import { stores } from '@/lib/data';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -26,6 +26,16 @@ export default function HomePage() {
     );
     return uniqueCategories;
   }, [selectedStore]);
+
+  // 初期化: カテゴリが未選択または存在しない場合、最初のカテゴリを選択
+  useEffect(() => {
+    if (selectedStore && categories.length > 0) {
+      if (!selectedCategory || !categories.includes(selectedCategory)) {
+        setSelectedCategory(categories[0]);
+        setCurrentPage(0);
+      }
+    }
+  }, [selectedStore, categories, selectedCategory, setSelectedCategory, setCurrentPage]);
 
   // 選択カテゴリの全アイテムを取得
   const allCategoryItems = useMemo(() => {
@@ -67,6 +77,7 @@ export default function HomePage() {
     } else {
       // カテゴリの最終ページなら次のカテゴリへ
       const currentCategoryIndex = categories.indexOf(selectedCategory);
+      if (currentCategoryIndex === -1) return; // カテゴリが見つからない場合は何もしない
       const nextCategoryIndex = (currentCategoryIndex + 1) % categories.length;
       setSelectedCategory(categories[nextCategoryIndex]);
       setCurrentPage(0);
@@ -79,6 +90,7 @@ export default function HomePage() {
       setCurrentPage(currentPage - 1);
     } else {
       const currentCategoryIndex = categories.indexOf(selectedCategory);
+      if (currentCategoryIndex === -1) return; // カテゴリが見つからない場合は何もしない
       const prevCategoryIndex = (currentCategoryIndex - 1 + categories.length) % categories.length;
       const prevCategory = categories[prevCategoryIndex];
       setSelectedCategory(prevCategory);

@@ -5,8 +5,8 @@ import { CartItem, MenuItem } from './types';
 // 選択中の店舗ID
 export const selectedStoreAtom = atom<string>('bami');
 
-// 選択中のカテゴリ
-export const selectedCategoryAtom = atom<string>('主菜・飯');
+// 選択中のカテゴリ（初期値は空文字列）
+export const selectedCategoryAtom = atom<string>('');
 
 // 現在のページ番号（カテゴリごとに0から開始）
 export const currentPageAtom = atom<number>(0);
