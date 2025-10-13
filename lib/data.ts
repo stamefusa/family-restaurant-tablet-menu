@@ -9,7 +9,7 @@ export const stores: Store[] = [
       // 主菜・飯
       { id: 'main-mabotofu', name: '本格四川麻婆豆腐', price: 659, image: '/images/bami/main-mabotofu.jpg', category: '主菜・飯' },
       { id: 'main-yurinchi', name: '油淋鶏', price: 769, image: '/images/bami/main-yurinchi.jpg', category: '主菜・飯' },
-      { id: 'main-mabokaraage', name: '麻婆チャーハン＆台湾大からあげ', price: 1319, image: '/images/bami/main-mabokaraage.jpg', category: '主菜・飯' },
+      //{ id: 'main-mabokaraage', name: '麻婆チャーハン＆台湾大からあげ', price: 1319, image: '/images/bami/main-mabokaraage.jpg', category: '主菜・飯' },
       { id: 'main-chukadon', name: '中華丼', price: 824, image: '/images/bami/main-chukadon.jpg', category: '主菜・飯' },
       { id: 'main-tenshinchahan', name: '天津チャーハン', price: 879, image: '/images/bami/main-tenshinchahan.jpg', category: '主菜・飯' },
 
