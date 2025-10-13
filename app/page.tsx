@@ -94,7 +94,7 @@ export default function HomePage() {
   return (
     <div className="h-screen overflow-hidden bg-gray-50 flex flex-col">
       {/* 上段: 店舗タブ + オリジナルタブ（固定高さ） */}
-      {/* <div className="bg-white border-b border-gray-200 shadow-sm flex-shrink-0">
+      <div className="bg-white border-b border-gray-200 shadow-sm flex-shrink-0">
         <div className="container mx-auto overflow-x-auto">
           <div className="flex gap-2 p-2">
             {stores.map((store) => (
@@ -112,7 +112,7 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-      </div> */}
+      </div>
 
       {/* 下段: カテゴリタブ（固定高さ） */}
       {categories.length > 0 && (
